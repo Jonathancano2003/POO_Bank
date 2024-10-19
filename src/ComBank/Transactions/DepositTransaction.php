@@ -1,4 +1,6 @@
-<?php namespace ComBank\Transactions;
+<?php
+
+namespace ComBank\Transactions;
 
 /**
  * Created by VS Code.
@@ -7,12 +9,24 @@
  * Time: 11:30 AM
  */
 
-use ComBank\Bank\Contracts\BackAccountInterface;
+use ComBank\Bank\Contracts\BankAccountInterface;
 use ComBank\Transactions\Contracts\BankTransactionInterface;
 
-class DepositTransaction 
+class DepositTransaction extends BaseTransaction implements BankTransactionInterface
 {
 
+    public function applyTransaction(BankAccountInterface $account): float
+    {
+        // Implementación para agregar fondos a la cuenta
+    }
 
-   
+    public function getTransactionInfo(): string
+    {
+        // Implementación
+    }
+
+    public function getAmount(): float
+    {
+        return $this->amount;
+    }
 }

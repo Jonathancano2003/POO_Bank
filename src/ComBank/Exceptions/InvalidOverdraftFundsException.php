@@ -11,4 +11,10 @@ class InvalidOverdraftFundsException extends BaseExceptions
 {
     protected $errorCode = 200;
     protected $errorLabel = 'InvalidOverdraftFundsException';
+
+    public function __construct($message = null)
+    {
+        $message = $message ?? "Error [{$this->errorCode}]: {$this->errorLabel} - Overdraft limit exceeded.";
+        parent::__construct($message, $this->errorCode);
+    }
 }

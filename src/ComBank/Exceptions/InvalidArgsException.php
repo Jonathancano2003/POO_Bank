@@ -4,11 +4,17 @@
  * Created by VS Code.
  * User: JPortugal
  * Date: 7/28/24
- * Time: 11:34 AM
+ * Time: 1:31 PM
  */
 
-class InvalidArgsException extends BaseExceptions
+class InvalidOverdraftFundsException extends BaseExceptions
 {
-    protected $errorCode = 100;
-    protected $errorLabel = 'InvalidArgsException';
+    protected $errorCode = 200;
+    protected $errorLabel = 'InvalidOverdraftFundsException';
+
+    public function __construct($message = null)
+    {
+        $message = $message ?? "Error [{$this->errorCode}]: {$this->errorLabel} - Overdraft limit exceeded.";
+        parent::__construct($message, $this->errorCode);
+    }
 }

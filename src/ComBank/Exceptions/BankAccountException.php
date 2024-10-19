@@ -11,4 +11,10 @@ class BankAccountException extends BaseExceptions
 {
     protected $errorCode = 500;
     protected $errorLabel = 'BankAccountException';
+
+    public function __construct($message = null)
+    {
+        $message = $message ?? "Error [{$this->errorCode}]: {$this->errorLabel} - There is an issue with the bank account.";
+        parent::__construct($message, $this->errorCode);
+    }
 }
