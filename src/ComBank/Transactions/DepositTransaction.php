@@ -14,15 +14,16 @@ use ComBank\Transactions\Contracts\BankTransactionInterface;
 
 class DepositTransaction extends BaseTransaction implements BankTransactionInterface
 {
-
     public function applyTransaction(BankAccountInterface $account): float
     {
-        // Implementación para agregar fondos a la cuenta
+        $newBalance = $account->getBalance() + $this->amount;
+        $account->setBalance($newBalance);
+        return $newBalance;
     }
 
     public function getTransactionInfo(): string
     {
-        // Implementación
+        return "Depósito de {$this->amount} realizado.";
     }
 
     public function getAmount(): float

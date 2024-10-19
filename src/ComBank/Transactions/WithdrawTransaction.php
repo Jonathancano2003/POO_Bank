@@ -1,3 +1,4 @@
+
 <?php
 
 namespace ComBank\Transactions;
@@ -17,12 +18,19 @@ class WithdrawTransaction extends BaseTransaction implements BankTransactionInte
 {
     public function applyTransaction(BankAccountInterface $account): float
     {
-        // Implementación para retirar fondos de la cuenta
+        $newBalance = $account->getBalance() - $this->amount;
+
+        if ($newBalance < 0 && !$account->getOverdraft()->isGrantOverdraftFunds($newBalance)) {
+            throw new InvalidOverdraftFundsException("Fondos insuficientes para realizar el retiro, incluso con sobregiro.");
+        }
+
+        $account->setBalance($newBalance);
+        return $newBalance;
     }
 
     public function getTransactionInfo(): string
     {
-        // Implementación
+        return "Retiro de {$this->amount} realizado.";
     }
 
     public function getAmount(): float

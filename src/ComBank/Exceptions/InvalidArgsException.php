@@ -7,10 +7,10 @@
  * Time: 1:31 PM
  */
 
-class InvalidOverdraftFundsException extends BaseExceptions
+class InvalidArgsException extends BaseExceptions
 {
     protected $errorCode = 200;
-    protected $errorLabel = 'InvalidOverdraftFundsException';
+    protected $errorLabel = 'InvalidArgsException';
 
     public function __construct($message = null)
     {

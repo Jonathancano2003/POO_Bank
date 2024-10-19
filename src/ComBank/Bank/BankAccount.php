@@ -2,18 +2,10 @@
 
 namespace ComBank\Bank;
 
-/**
- * Created by VS Code.
- * User: JPortugal
- * Date: 7/27/24
- * Time: 7:25 PM
- */
-
 use ComBank\Exceptions\BankAccountException;
 use ComBank\Exceptions\InvalidArgsException;
 use ComBank\Exceptions\ZeroAmountException;
 use ComBank\OverdraftStrategy\NoOverdraft;
-use ComBank\Bank\Contracts\BackAccountInterface;
 use ComBank\Bank\Contracts\BankAccountInterface;
 use ComBank\Exceptions\FailedTransactionException;
 use ComBank\Exceptions\InvalidOverdraftFundsException;
@@ -23,47 +15,80 @@ use ComBank\Transactions\Contracts\BankTransactionInterface;
 
 class BankAccount implements BankAccountInterface
 {
+    use AmountValidationTrait;
+
     private float $balance;
     private bool $status;
     private OverdraftInterface $overdraft;
 
+    const STATUS_OPEN = true;
+    const STATUS_CLOSED = false;
+
+    public function __construct($balance)
+    {
+        $this->setBalance($balance);  
+        $this->status = self::STATUS_OPEN;
+        $this->overdraft = new NoOverdraft();  
+    }
+
     public function transaction(BankTransactionInterface $transaction): void
     {
-        // Implementación
+        if (!$this->isOpen()) {
+            throw new BankAccountException("La cuenta está cerrada, no se pueden realizar transacciones.");
+        }
+
+        try {
+            $newBalance = $transaction->applyTransaction($this);
+            $this->setBalance($newBalance);
+        } catch (FailedTransactionException $e) {
+            throw new FailedTransactionException("Transacción fallida: " . $e->getMessage());
+        }
     }
 
     public function isOpen(): bool
     {
-        // Implementación
+        return $this->status === self::STATUS_OPEN;
     }
 
     public function reopenAccount(): void
     {
-        // Implementación
+        if ($this->status === self::STATUS_CLOSED) {
+            $this->status = self::STATUS_OPEN;
+        }
     }
 
     public function closeAccount(): void
     {
-        // Implementación
+        if ($this->status !== self::STATUS_CLOSED) {
+            $this->status = self::STATUS_CLOSED;
+        }
     }
 
     public function getBalance(): float
     {
-        // Implementación
+        return $this->balance;
     }
 
     public function getOverdraft(): OverdraftInterface
     {
-        // Implementación
+        return $this->overdraft;
     }
 
     public function applyOverdraft(OverdraftInterface $overdraft): void
     {
-        // Implementación
+        if (!$overdraft->isGrantOverdraftFunds($this->balance)) {
+            throw new InvalidOverdraftFundsException("No se puede aplicar el sobregiro, los fondos no son suficientes.");
+        }
+        $this->overdraft = $overdraft;
     }
 
     public function setBalance(float $balance): void
     {
-        // Implementación
+        $this->validateAmount($balance);  
+        if ($balance < 0 && !$this->overdraft->isGrantOverdraftFunds($balance)) {
+            throw new InvalidOverdraftFundsException("Fondos de sobregiro insuficientes para cubrir el balance negativo.");
+        }
+
+        $this->balance = $balance;
     }
 }
