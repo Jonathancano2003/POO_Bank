@@ -19,11 +19,13 @@ class WithdrawTransaction extends BaseTransaction implements BankTransactionInte
     public function applyTransaction(BankAccountInterface $account): float
     {
         $newBalance = $account->getBalance() - $this->amount;
-
+    
+        // Verificar si el nuevo balance es negativo y si tiene sobregiro permitido
         if ($newBalance < 0 && !$account->getOverdraft()->isGrantOverdraftFunds($newBalance)) {
             throw new InvalidOverdraftFundsException("Fondos insuficientes para realizar el retiro, incluso con sobregiro.");
         }
-
+    
+        // Actualizar el balance si la transacción es válida
         $account->setBalance($newBalance);
         return $newBalance;
     }

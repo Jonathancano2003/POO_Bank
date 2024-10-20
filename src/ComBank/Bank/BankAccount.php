@@ -51,11 +51,13 @@ class BankAccount implements BankAccountInterface
     }
 
     public function reopenAccount(): void
-    {
-        if ($this->status === self::STATUS_CLOSED) {
-            $this->status = self::STATUS_OPEN;
-        }
+{
+    if ($this->status === self::STATUS_OPEN) {
+        throw new BankAccountException("La cuenta ya está abierta y no se puede reabrir.");
     }
+    $this->status = self::STATUS_OPEN;
+}
+
 
     public function closeAccount(): void
     {
